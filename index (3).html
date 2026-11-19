@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dostum ile Öğren</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff8e7;--ink:#33302b;--card:#fffdf7;--line:#3b82a0;--acc:#f4a259;--good:#5ba66b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Comic Neue","Comic Sans MS","Trebuchet MS",sans-serif;font-size:22px;line-height:1.5;letter-spacing:.04em;min-height:100vh}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#e8f1f5;position:sticky;top:0;z-index:5}
+header button{font-size:24px;min-height:44px;padding:0 12px}
+#app{max-width:820px;margin:0 auto;padding:16px 16px 110px;text-align:center}
+h1{font-size:1.5em;margin:.3em 0}h2{font-size:1.15em;margin:.4em 0}
+button{font:inherit;color:inherit;background:var(--card);border:3px solid var(--line);border-radius:18px;padding:10px 18px;min-height:56px;cursor:pointer;margin:6px}
+button:active{transform:scale(.95)}
+button small{display:block;font-size:.6em}
+button:disabled{opacity:.6}
+input{font:inherit;padding:10px;border:3px solid var(--line);border-radius:14px;text-align:center;width:240px;background:var(--card)}
+.row{display:flex;flex-wrap:wrap;justify-content:center}
+.big{font-size:56px;width:110px;line-height:1.1}
+.big.on{background:#ffe3b8;border-color:var(--acc)}
+.go{background:var(--good);color:#fff;border-color:var(--good);font-size:1.1em}
+.sm{min-height:44px;font-size:.8em}
+.fab{position:fixed;right:16px;bottom:16px;background:var(--acc);border-color:#c97a2c;font-size:1.1em;box-shadow:0 4px 0 #c97a2c;z-index:6}
+.stage{padding:20px 0 0}
+.pet{font-size:130px;line-height:1.1;display:inline-block;transform-origin:50% 100%}
+.idle{animation:bob 3s ease-in-out infinite}
+.sad{filter:grayscale(.6);opacity:.85;animation:bob 5s ease-in-out infinite}
+.happy{animation:hop .9s ease-in-out infinite}
+.eat{animation:chomp .6s ease-in-out !important}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1,1)}30%{transform:translateY(0) scale(1.1,.9)}60%{transform:translateY(-40px) rotate(-6deg) scale(.95,1.05)}}
+@keyframes chomp{0%,100%{transform:scale(1)}25%{transform:scale(1.2,.85)}50%{transform:scale(.9,1.15)}75%{transform:scale(1.15,.9)}}
+.bar{width:80%;max-width:360px;height:28px;margin:8px auto;border:3px solid var(--line);border-radius:20px;background:#fff;overflow:hidden}
+.bar i{display:block;height:100%;width:50%;background:linear-gradient(90deg,#f7b267,#79b473);transition:width .6s}
+.food{font-size:42px;min-width:110px}
+#bubble{min-height:34px;font-size:.9em}
+#fx{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
+#fx span{position:absolute;bottom:25%;font-size:34px;opacity:0;animation:up 1.6s ease-out both}
+@keyframes up{0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-220px) scale(1.4);opacity:0}}
+.card{width:150px;font-size:.8em}
+.letters{font-size:1.6em;letter-spacing:.2em;color:var(--line)}
+.target{font-size:72px;margin:0;color:var(--line);font-weight:700}
+.sky{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:10px}
+.balloon{width:96px;height:116px;border-radius:50% 50% 46% 46%;font-size:46px;font-weight:700;padding:0;border:3px solid #fff;color:var(--ink);animation:bob 3s ease-in-out infinite;transition:.3s}
+.pop{transform:scale(0) !important;opacity:0;animation:none !important}
+.shake{animation:shake .4s !important}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.emo{font-size:110px;line-height:1.1}
+.wagon{display:inline-flex;align-items:center;justify-content:center;min-width:90px;height:64px;margin:6px;border:3px dashed var(--line);border-radius:12px;background:#e8f1f5;font-size:1.2em}
+.wagon.fill{border-style:solid;background:#d6f0d6}
+.chip{font-size:1.2em;min-width:90px}
+.fruit{font-size:44px;width:80px;transition:.3s}
+.fruit.eaten{filter:grayscale(1) opacity(.35);transform:scale(.7)}
+.group{font-size:40px;line-height:1.3;margin:10px 0}
+.eq{font-size:56px;font-weight:700}
+.num{font-size:44px;width:100px;font-weight:700}
+.num.good{background:#d6f0d6;border-color:var(--good)}
+.jump{font-size:70px;line-height:1}
+.hop{animation:hop .9s ease-out 2}
+.tramp{width:170px;height:12px;margin:0 auto 12px;background:var(--line);border-radius:8px}
+select{font:inherit;padding:10px;border:3px solid var(--line);border-radius:14px;background:var(--card);margin:6px}
+input{margin:6px}
+.card.on{background:#d6f0d6;border-color:var(--good)}
+.hist{text-align:left;max-width:520px;margin:0 auto;font-size:.8em}
+#ov{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:20}
+.dlg{background:var(--bg);padding:24px;border-radius:20px;max-width:420px;margin:16px}
+.txt{font-size:26px;width:auto;min-width:130px}
+.gq{font-size:1.2em;margin:16px 0}
+/* ---- Çocuk dostu görünüm ---- */
+body{background:linear-gradient(#a8dcff 0%,#d9f1ff 40%,#fff3c4 100%) fixed;position:relative}
+body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:16vh;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 100% at 20% 100%,#8fd98a 0 60%,transparent 61%),radial-gradient(ellipse 55% 90% at 75% 100%,#6fcf7f 0 60%,transparent 61%),radial-gradient(ellipse 50% 70% at 50% 100%,#a6e39b 0 60%,transparent 61%)}
+#bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+#bg span{position:absolute;font-size:56px;opacity:.6;animation:drift 14s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes drift{50%{transform:translate(14px,-18px)}}
+header{background:rgba(255,255,255,.85);backdrop-filter:blur(6px);border-radius:0 0 24px 24px;box-shadow:0 3px 10px #0001;font-weight:700}
+#app{position:relative;z-index:1;margin:14px auto;background:rgba(255,255,255,.86);border-radius:32px;box-shadow:0 6px 22px #3b82a033;padding-top:20px}
+h1,h2,.target,.eq{font-family:"Fredoka","Comic Neue","Comic Sans MS",sans-serif}
+h1{font-size:1.9em;color:#2f6fa3;text-shadow:2px 2px 0 #fff,3px 3px 0 #ffd27a}
+h2{color:#d9480f}
+.target{color:#d9480f}
+button{border-bottom-width:7px;font-weight:700;transition:transform .1s}
+button:active{transform:translateY(4px);border-bottom-width:3px}
+.row>button:nth-child(4n+1){background:#fff0d6;border-color:#f4a259}
+.row>button:nth-child(4n+2){background:#e3f6e8;border-color:#5ec576}
+.row>button:nth-child(4n+3){background:#e3f0ff;border-color:#4aa3df}
+.row>button:nth-child(4n+4){background:#ffe3f1;border-color:#ff7eb6}
+.row>button.good,.row>button.on,.card.on{background:#c9f0c9 !important;border-color:#3f9b52 !important}
+.go{background:#5ba66b !important;border-color:#3f8a50 !important}
+.food small{font-size:18px;line-height:1.2}
+.pet svg{width:1em;height:1em;display:block}
+.stage{background:radial-gradient(ellipse 110px 16px at 50% calc(100% - 2px),#0003,transparent)}
+.wagon,.bar{background:#fff}
+@media (max-width:600px){#app{margin:10px 8px;border-radius:24px}}
+@media (prefers-reduced-motion:reduce){.idle,.sad,.balloon,#bg span{animation:none}}
+</style>
+</head>
+<body>
+<div id="bg" aria-hidden="true">
+ <span style="left:3%;top:10%;--d:0s">☁️</span><span style="right:5%;top:16%;--d:-4s">☁️</span>
+ <span style="right:4%;top:2%;--d:-2s;font-size:70px">☀️</span><span style="left:6%;top:44%;--d:-6s">🎈</span>
+ <span style="right:7%;top:52%;--d:-8s">🦋</span><span style="left:4%;top:70%;--d:-3s">⭐</span>
+ <span style="right:5%;top:74%;--d:-5s">🌈</span><span style="left:12%;bottom:6%;--d:-1s;font-size:44px">🌻</span>
+ <span style="right:14%;bottom:5%;--d:-7s;font-size:44px">🌷</span>
+</div>
+<header>
+  <span id="hs">⭐ <b id="st">0</b></span>
+  <span><button id="vc" title="Sesi değiştir">🗣️</button><button id="snd" title="Ses">🔊</button><button id="rst" title="Çıkış">🚪</button></span>
+</header>
+<div id="app"></div>
+<div id="fx"></div>
+<script>
+const $=s=>document.querySelector(s), app=$("#app");
+const rnd=n=>Math.floor(Math.random()*n);
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const up=c=>c.toLocaleUpperCase("tr-TR");
+const AN=[["🐰","Tavşan"],["🐱","Kedi"],["🐥","Civciv"],["🐨","Koala"],["🐶","Köpek"],["🐼","Panda"],["🐻","Ayı"]];
+// Her hayvanın gerçekte yediği besinler
+const FOODS_BY={
+ "🐰":[["🥕","Havuç"],["🥬","Marul"],["🌿","Taze ot"],["🍎","Elma"],["🥒","Salatalık"]],
+ "🐱":[["🐟","Balık"],["🍗","Tavuk"],["🦐","Karides"],["🥚","Yumurta"]],
+ "🐥":[["🌾","Buğday"],["🌽","Mısır"],["🪱","Solucan"],["🌱","Filiz"],["🥬","Marul"]],
+ "🐨":[["🍃","Okaliptüs yaprağı"],["🌿","Taze dal"],["🌱","Genç sürgün"],["🌳","Okaliptüs dalı"]],
+ "🐶":[["🦴","Kemik"],["🍗","Tavuk"],["🥩","Et"],["🥕","Havuç"],["🍚","Pilav"]],
+ "🐼":[["🎋","Bambu"],["🌱","Bambu filizi"],["🍎","Elma"],["🥕","Havuç"]],
+ "🐻":[["🐟","Balık"],["🍯","Bal peteği"],["🍓","Çilek"],["🌰","Fındık"],["🍇","Üzüm"]]
+};
+const foods=()=>FOODS_BY[S.pet]||FOODS_BY["🐰"];
+// Harf grupları (1. sınıf ses temelli okuma-yazma sırası)
+const G=["anetil","okurım","üsöydz","çbgcş","phvğfj"];
+// Her grup için resimli hece kelimeleri
+const W=a=>a.map(([e,t])=>[e,t.split("-")]);
+const WORDS=[
+ W([["👩","an-ne"],["🌷","la-le"],["🌿","na-ne"],["🐴","at"],["✋","el"]]),
+ W([["🍎","el-ma"],["✏️","ka-lem"],["🏫","o-kul"],["🍐","ar-mut"],["🌲","or-man"],["🏰","ka-le"],["🍄","man-tar"],["📷","ka-me-ra"],["🐝","a-rı"],["🦝","ra-kun"],["🍋","li-mon"],["🦊","til-ki"],["🐄","i-nek"],["🍞","ek-mek"],["🚤","tek-ne"],["📦","ku-tu"],["🦴","ke-mik"],["🚇","met-ro"],["🏍️","mo-tor"]]),
+ W([["🦆","ör-dek"],["⭐","yıl-dız"],["🐱","ke-di"],["🌊","de-niz"],["🍅","do-ma-tes"],["🪑","san-dal-ye"],["⌚","sa-at"],["🛏️","ya-tak"],["🍽️","ye-mek"],["🎬","si-ne-ma"],["📻","rad-yo"],["🌍","dün-ya"],["🚀","u-zay"],["🐍","yı-lan"],["🥚","yu-mur-ta"],["🪰","si-nek"],["🫒","zey-tin"],["🥗","sa-la-ta"],["✂️","ma-kas"],["🌭","so-sis"],["🥯","si-mit"],["🍦","don-dur-ma"],["🦖","di-no-zor"],["🌽","mı-sır"]]),
+ W([["🚗","a-ra-ba"],["🐟","ba-lık"],["🌸","çi-çek"],["☀️","gü-neş"],["👶","be-bek"],["🍓","çi-lek"],["☁️","bu-lut"],["🎈","ba-lon"],["🚲","bi-sik-let"],["🥛","bar-dak"],["🍲","çor-ba"],["👓","göz-lük"],["🚢","ge-mi"],["🐋","ba-li-na"],["🎒","çan-ta"],["☂️","şem-si-ye"],["🥄","ka-şık"],["🍴","ça-tal"],["🎸","gi-tar"],["🚩","bay-rak"],["🧒","ço-cuk"],["🧥","ce-ket"],["👗","el-bi-se"],["🔨","çe-kiç"],["🍬","şe-ker"],["💻","bil-gi-sa-yar"],["🌙","ge-ce"],["🐷","do-muz"],["🧼","sa-bun"],["✈️","u-çak"],["🦋","ke-le-bek"]]),
+ W([["📖","ki-tap"],["🥕","ha-vuç"],["🐰","tav-şan"],["🐓","ho-roz"],["🐭","fa-re"],["🧑‍✈️","pi-lot"],["🦜","pa-pa-ğan"],["🐅","kap-lan"],["🐢","kap-lum-ba-ğa"],["🎂","pas-ta"],["🍊","por-ta-kal"],["🎩","şap-ka"],["🧦","ço-rap"],["📞","te-le-fon"],["📺","te-le-viz-yon"],["⛴️","va-pur"],["🏡","bah-çe"],["🌳","a-ğaç"],["🍂","yap-rak"],["🍉","kar-puz"],["🥔","pa-ta-tes"],["🧀","pey-nir"],["🚁","he-li-kop-ter"],["🎁","he-di-ye"],["🏥","has-ta-ne"],["🪟","pen-ce-re"],["🤡","pal-ya-ço"],["☝️","par-mak"],["🍚","pi-rinç"],["📰","ga-ze-te"],["🌱","fi-liz"],["👖","pan-to-lon"],["⛈️","fır-tı-na"],["☕","kah-ve"],["🔊","ho-par-lör"],["🔦","fe-ner"],["🐔","ta-vuk"],["🏊","ha-vuz"]])
+];
+const COL=["#ffd6a5","#caffbf","#9bf6ff","#bdb2ff","#ffc6ff","#fdffb6"];
+const back='<p><button class="sm" onclick="menu()">⬅ Oyunlar</button></p>';
+
+// Tüm kayıtlar bu tarayıcıda (localStorage) tutulur
+let DB={users:{},cur:null,guest:{pet:null,name:"",full:60,stars:10,snd:true,hist:[]}};
+try{const d=JSON.parse(localStorage.getItem("dostumDB")||"null");if(d)DB=d;
+  else{const o=JSON.parse(localStorage.getItem("dostum")||"null");if(o)Object.assign(DB.guest,o)}}catch(e){}
+let ME=null,S=DB.guest,view="",sel=null,lastGame="";
+const save=()=>{try{localStorage.setItem("dostumDB",JSON.stringify(DB))}catch(e){}};
+const hud=()=>{$("#st").textContent=S.stars;$("#snd").textContent=S.snd?"🔊":"🔇";
+  $("#hs").style.visibility=(ME&&ME.role!=="ogrenci")?"hidden":"visible"};
+const RL={ogrenci:"Öğrenci",veli:"Veli",ogretmen:"Öğretmen"};
+// Puanlama ölçütleri
+const PCRIT=[["Markette kasiyer ile doğru iletişim kurma",5],["Sırada sakince ve sabırla bekleme",5],["Oyunda arkadaşlarına uyum sağlama",10],["Arkadaşı ile yiyeceğini / oyuncağını paylaşma",10],["Ev işlerinde yardım etme",10],["Kendi dağıttığı yerleri toplama",15]];
+const TCRIT=[["Dersin düzenine ayak uydurma",10],["Derse katılım",15],["Arkadaşları ile iletişim kurabilme",20],["Arkadaşları ile yardımlaşma",25],["Sınıfını ve sırasını temiz ve düzenli tutma",20],["Kantinde sabırla sıra bekleme",15],["Öğretmen ve arkadaşlarına kibar sözler söyleme",25]];
+
+let VO=null;
+const trVoices=()=>window.speechSynthesis?speechSynthesis.getVoices().filter(x=>/^tr/i.test(x.lang)):[];
+function pickVoice(){
+  const v=trVoices();if(!v.length)return;
+  const f=DB.voice&&v.find(x=>x.name===DB.voice);if(f){VO=f;return}
+  // En doğal sesi seç: online/natural/neural/Google, tercihen kadın sesi
+  const sc=x=>(/natural|neural|online/i.test(x.name)?5:0)+(/google/i.test(x.name)?3:0)+(/emel|yelda|seda|female|kad[ıi]n/i.test(x.name)?2:0)-(/tolga|ahmet|cem|\bmale\b/i.test(x.name)?2:0);
+  VO=[...v].sort((a,b)=>sc(b)-sc(a))[0];
+}
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=pickVoice;
+function say(t){
+  if(!S.snd||!window.speechSynthesis)return;
+  try{
+    if(!VO)pickVoice();
+    speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
+    u.lang="tr-TR";u.rate=.85;u.pitch=1.1;if(VO)u.voice=VO;speechSynthesis.speak(u);
+  }catch(e){}
+}
+let AC=null;
+function sfx(k,delay){
+  if(!S.snd)return;
+  setTimeout(()=>{try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    const seq={pop:[[700,0,.1]],ding:[[784,0,.12],[1047,.1,.2]],
+      ok:[[523,0,.12],[659,.12,.12],[784,.24,.12],[1047,.36,.3]],
+      win:[[523,0,.15],[659,.15,.15],[784,.3,.15],[1047,.45,.15],[784,.6,.15],[1047,.75,.45]]}[k];
+    seq.forEach(([f,s,d])=>{
+      const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+s;
+      o.type="triangle";o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,t+d);
+      o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.05);
+    });
+  }catch(e){}},delay||0);
+}
+function burst(e,n){
+  if(n>1)sfx(n>=14?"win":n<=3?"pop":"ok",n<=3?0:250);
+  const f=$("#fx");
+  for(let i=0;i<n;i++){
+    const s=document.createElement("span");
+    s.textContent=e[rnd(e.length)];
+    s.style.left=(8+rnd(84))+"%";
+    s.style.animationDelay=(i*.08)+"s";
+    f.appendChild(s);setTimeout(()=>s.remove(),2200);
+  }
+}
+
+/* ---------- Yüz ifadeli hayvanlar (SVG) ---------- */
+const FACE={
+ "🐰":{h:"#fff",o:"#d9d9d9",back:'<ellipse cx="72" cy="42" rx="16" ry="42" fill="#fff" stroke="#d9d9d9" stroke-width="3"/><ellipse cx="128" cy="42" rx="16" ry="42" fill="#fff" stroke="#d9d9d9" stroke-width="3"/><ellipse cx="72" cy="46" rx="8" ry="28" fill="#ffc2d1"/><ellipse cx="128" cy="46" rx="8" ry="28" fill="#ffc2d1"/>',front:'<ellipse cx="100" cy="116" rx="7" ry="5" fill="#ff8fa8"/>'},
+ "🐱":{h:"#f6a65a",back:'<polygon points="38,76 50,14 92,46" fill="#f6a65a"/><polygon points="162,76 150,14 108,46" fill="#f6a65a"/><polygon points="50,62 56,32 78,48" fill="#ffc2d1"/><polygon points="150,62 144,32 122,48" fill="#ffc2d1"/>',front:'<polygon points="93,113 107,113 100,121" fill="#ff8fa8"/>',wh:'<g stroke="#6b4a2b" stroke-width="2.5" stroke-linecap="round"><path d="M52 122L14 114M52 130L14 134M148 122L186 114M148 130L186 134"/></g>'},
+ "🐥":{h:"#ffd84d",o:"#f0b800",back:'<ellipse cx="100" cy="38" rx="7" ry="16" fill="#ffd84d" transform="rotate(-25 100 50)"/><ellipse cx="100" cy="36" rx="7" ry="18" fill="#ffd84d"/><ellipse cx="100" cy="38" rx="7" ry="16" fill="#ffd84d" transform="rotate(25 100 50)"/>',front:'<polygon points="88,110 112,110 100,126" fill="#ff9f1c"/>'},
+ "🐨":{h:"#aab4c0",back:'<circle cx="42" cy="58" r="30" fill="#9aa5b1"/><circle cx="158" cy="58" r="30" fill="#9aa5b1"/><circle cx="42" cy="58" r="17" fill="#e8edf2"/><circle cx="158" cy="58" r="17" fill="#e8edf2"/>',front:'<ellipse cx="100" cy="112" rx="15" ry="11" fill="#2f2f2f"/>'},
+ "🐶":{h:"#e3b57e",back:'<ellipse cx="36" cy="92" rx="20" ry="40" fill="#8a5a3c" transform="rotate(18 36 92)"/><ellipse cx="164" cy="92" rx="20" ry="40" fill="#8a5a3c" transform="rotate(-18 164 92)"/>',mid:'<ellipse cx="100" cy="128" rx="36" ry="28" fill="#f7e0bf"/>',front:'<ellipse cx="100" cy="114" rx="11" ry="8" fill="#2b2b2b"/>'},
+ "🐼":{h:"#fff",o:"#d9d9d9",pd:1,back:'<circle cx="48" cy="50" r="26" fill="#2b2b2b"/><circle cx="152" cy="50" r="26" fill="#2b2b2b"/>',mid:'<ellipse cx="70" cy="102" rx="17" ry="22" fill="#2b2b2b" transform="rotate(-20 70 102)"/><ellipse cx="130" cy="102" rx="17" ry="22" fill="#2b2b2b" transform="rotate(20 130 102)"/>',front:'<ellipse cx="100" cy="116" rx="9" ry="6" fill="#2b2b2b"/>'},
+ "🐻":{h:"#a8714a",back:'<circle cx="50" cy="50" r="26" fill="#8d5a3b"/><circle cx="150" cy="50" r="26" fill="#8d5a3b"/><circle cx="50" cy="50" r="13" fill="#d9a77a"/><circle cx="150" cy="50" r="13" fill="#d9a77a"/>',mid:'<ellipse cx="100" cy="128" rx="34" ry="26" fill="#ecc8a2"/>',front:'<ellipse cx="100" cy="115" rx="11" ry="8" fill="#2b2b2b"/>'}
+};
+function face(a,m){
+  const f=FACE[a];if(!f)return a;
+  const hp=m==="happy"||m==="eat",ec=f.pd?"#fff":"#2b2b2b";
+  const eye=x=>hp?`<path d="M${x-11} 103 Q${x} 87 ${x+11} 103" fill="none" stroke="${ec}" stroke-width="5.5" stroke-linecap="round"/>`
+    :f.pd?`<circle cx="${x}" cy="100" r="9" fill="#fff"/><circle cx="${x}" cy="101" r="5" fill="#222"/>`
+    :`<circle cx="${x}" cy="100" r="8" fill="#2b2b2b"/><circle cx="${x+3}" cy="97" r="2.6" fill="#fff"/>`;
+  const mouth={ok:'<path d="M86 134 Q100 146 114 134" fill="none" stroke="#5a3a2a" stroke-width="4.5" stroke-linecap="round"/>',
+    sad:'<path d="M88 144 Q100 130 112 144" fill="none" stroke="#5a3a2a" stroke-width="4.5" stroke-linecap="round"/>',
+    happy:'<path d="M76 128 Q100 168 124 128 Z" fill="#8b2635" stroke="#8b2635" stroke-width="3" stroke-linejoin="round"/><ellipse cx="100" cy="148" rx="10" ry="6" fill="#ff8fa3"/>',
+    eat:'<ellipse cx="100" cy="140" rx="12" ry="14" fill="#8b2635"/><ellipse cx="100" cy="148" rx="7" ry="5" fill="#ff8fa3"/>'}[m]||"";
+  const ch=hp?'<circle cx="55" cy="124" r="11" fill="#ff8fb1" opacity=".65"/><circle cx="145" cy="124" r="11" fill="#ff8fb1" opacity=".65"/>':"";
+  const tear=m==="sad"?'<path d="M66 112q-6 10 0 13q7-3 0-13z" fill="#7cc7ff"/>':"";
+  return `<svg viewBox="0 0 200 200" aria-hidden="true">${f.back||""}<circle cx="100" cy="112" r="72" fill="${f.h}" stroke="${f.o||"#0002"}" stroke-width="3"/>${f.mid||""}${ch}${eye(72)}${eye(128)}${tear}${f.front||""}${mouth}${f.wh||""}</svg>`;
+}
+let joyUntil=0;
+const moodNow=()=>Date.now()<joyUntil||S.full>=70?"happy":S.full<30?"sad":"ok";
+
+/* ---------- Evcil hayvan seçimi ---------- */
+function pick(){
+  view="pick";
+  app.innerHTML=`<h1>Evcil dostunu seç</h1>
+  <div class="row">${AN.map((a,i)=>`<button class="big" onclick="selA(${i},this)">${a[0]}<small>${a[1]}</small></button>`).join("")}</div>
+  <p>Ona bir isim ver:</p><input id="nm" maxlength="12" placeholder="Örn: Pamuk">
+  <p id="msg"></p><button class="go" onclick="startPet()">Başlayalım!</button>`;
+}
+function selA(i,b){
+  sel=i;document.querySelectorAll(".big").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on");say(AN[i][1]);
+}
+function startPet(){
+  if(sel===null){$("#msg").textContent="Önce bir hayvan seç 🙂";return}
+  S.pet=AN[sel][0];S.name=$("#nm").value.trim()||AN[sel][1];S.full=60;S.stars=10;
+  save();hud();home();
+}
+
+/* ---------- Ana ekran: hayvanı besle ---------- */
+function home(){
+  view="home";
+  app.innerHTML=`<div class="stage"><div id="bubble"></div><div id="pet" class="pet idle"></div></div>
+  <h2>${S.name}</h2><div class="bar"><i id="fill"></i></div><p id="mood"></p>
+  <p>Beslemek için bir yiyecek seç (her biri 2 ⭐):</p>
+  <div class="row">${foods().map((f,i)=>`<button class="food" onclick="feed(${i})">${f[0]}<small>${f[1]}</small></button>`).join("")}</div>
+  <button class="fab" onclick="menu()">🎮 Oyunlar</button>`;
+  paint();
+  const nw=(S.hist||[]).filter(h=>h.by!=="Oyun"&&!h.seen);
+  if(nw.length){nw.forEach(h=>h.seen=1);save();
+    setTimeout(()=>{const b=$("#bubble");if(b)b.textContent=`🎁 ${nw.length} yeni puan: +${nw.reduce((a,h)=>a+h.pts,0)} ⭐`;burst(["⭐","✨"],14)},300)}
+}
+function paint(){
+  const f=$("#fill");if(!f)return;
+  f.style.width=S.full+"%";const m=moodNow(),p=$("#pet");
+  p.className="pet "+(m==="happy"?"happy":m==="sad"?"sad":"idle");
+  p.innerHTML=face(S.pet,m);
+  $("#mood").textContent=m==="happy"?"Mutlu! 😍":m==="sad"?"Karnım acıktı 🍽️":"İyiyim 🙂";
+}
+function feed(i){
+  const b=$("#bubble");
+  if(S.full>=100){b.textContent="Karnım çok tok, teşekkürler! 😊";say("Karnım tok");return}
+  if(S.stars<2){b.textContent="Yıldız kazanmak için oyun oyna! 🎮";say("Yıldız kazanmak için oyun oyna");return}
+  S.stars-=2;S.full=Math.min(100,S.full+15);save();hud();paint();
+  const p=$("#pet");p.classList.add("eat");p.innerHTML=face(S.pet,"eat");joyUntil=Date.now()+4500;setTimeout(paint,650);setTimeout(paint,4600);
+  burst(["💖","⭐","✨"],S.full>=70?14:6);
+  const f=foods()[i];
+  b.textContent=S.full>=70?"Çok mutluyum! 🥰":`Nam nam! ${f[0]} ${f[1]} çok güzel!`;
+  say(S.full>=70?"Çok mutluyum!":`Nam nam! ${f[1]} çok güzel!`);
+}
+setInterval((()=>{let t=0;return()=>{
+  t++;
+  if(t%6===0&&S.pet){S.full=Math.max(0,S.full-1);save();if(view==="home")paint()}
+  if(view==="home"&&S.full>=70)burst(["💖","✨"],1);
+}})(),2500);
+
+/* ---------- Oyun menüsü ---------- */
+function menu(){
+  view="menu";
+  app.innerHTML=`<h1>Oyunlar</h1>
+  <h2>📖 Türkçe</h2><div class="row">${G.map((g,i)=>`<button class="card" onclick="grp(${i})"><b>${i+1}. Bölüm</b><br>${g.split("").map(up).join(" ")}</button>`).join("")}</div>
+  <h2>🔢 Matematik</h2><div class="row">
+   <button onclick="count()">🍎 Sayılarla Besleme</button>
+   <button onclick="match()">🔗 Sayı Eşleştirme</button>
+   <button onclick="add()">🤸 Toplama Trambolini</button></div>
+  <h2>🌍 Coğrafya</h2><div class="row">
+   <button onclick="geo(0)">⛰️ Yer Şekilleri</button>
+   <button onclick="geo(1)">🌦️ Hava Durumu</button>
+   <button onclick="geo(2)">🍂 Mevsimler</button>
+   <button onclick="geo(3)">🏫 Çevremiz</button>
+   <button onclick="geoq()">🧭 Türkiye ve Dünya</button></div>
+  <p><button onclick="home()">${S.pet} ${S.name} ile ilgilen</button></p>`;
+}
+function grp(i){
+  view="grp";
+  app.innerHTML=`<h1>${i+1}. Bölüm</h1><p class="letters">${G[i].split("").map(c=>up(c)+c).join("  ")}</p>
+  <div class="row"><button onclick="hunt(${i})">🎈 Sesli Harf Avcısı</button><button onclick="train(${i})">🚂 Hece Treni</button></div>${back}`;
+}
+function done(n){
+  S.stars+=n;(S.hist=S.hist||[]).push({by:"Oyun",txt:lastGame,pts:n,t:Date.now()});S.hist=S.hist.slice(-100);
+  save();hud();view="done";
+  app.innerHTML=`<h1>🎉 Harika!</h1><p>${n} ⭐ kazandın!</p>
+  <div class="row"><button onclick="menu()">🎮 Oyunlar</button><button onclick="home()">${S.pet} ${S.name}'i besle</button></div>`;
+  burst(["🎉","⭐","✨"],16);say("Harika iş çıkardın!");
+}
+
+/* ---------- Türkçe: Sesli Harf Avcısı ---------- */
+function hunt(i){
+  lastGame="Sesli Harf Avcısı, "+(i+1)+". bölüm";
+  const L=G[i].split(""),pool=G.slice(0,i+1).join("").split("");let r=0;
+  const step=()=>{
+    if(r>=L.length)return done(L.length*2);
+    const t=L[r];let found=0;
+    const bl=shuf([t,t,...shuf(pool.filter(c=>c!==t)).slice(0,4)]);
+    app.innerHTML=`<h2>Harf ${r+1}/${L.length}</h2><p class="target">${up(t)} ${t}</p>
+    <p>Bu harfi taşıyan 2 balonu bul!</p>
+    <div class="sky">${bl.map((c,k)=>`<button class="balloon" style="background:${COL[k]};animation-delay:${k*.4}s" data-c="${c}">${Math.random()<.5?up(c):c}</button>`).join("")}</div>${back}`;
+    say(t);
+    document.querySelectorAll(".balloon").forEach(b=>b.onclick=()=>{
+      if(b.dataset.c===t){
+        b.classList.add("pop");b.disabled=true;say(t);burst(["✨"],3);
+        if(++found===2){r++;setTimeout(step,1000)}
+      }else{
+        b.classList.add("shake");say("Tekrar dene, "+t+" harfini bulalım");
+        setTimeout(()=>b.classList.remove("shake"),500);
+      }
+    });
+  };
+  step();
+}
+
+/* ---------- Türkçe: Hece Treni ---------- */
+function train(i){
+  lastGame="Hece Treni, "+(i+1)+". bölüm";
+  const pool=WORDS.slice(0,i+1).flat(),ws=shuf(pool).slice(0,8);let r=0;
+  const step=()=>{
+    if(r>=ws.length)return done(ws.length*2);
+    const [em,sy]=ws[r];let k=0;
+    const extra=shuf(pool.flatMap(w=>w[1]).filter(s=>!sy.includes(s)))[0];
+    const chips=shuf(extra?[...sy,extra]:sy);
+    app.innerHTML=`<h2>Hece Treni ${r+1}/${ws.length}</h2><div class="emo">${em}</div>
+    <p>Heceleri sırayla seç:</p>
+    <div class="row" id="wag">${sy.map(()=>`<span class="wagon">?</span>`).join("")}</div>
+    <div class="row">${chips.map(c=>`<button class="chip">${c}</button>`).join("")}</div>${back}`;
+    document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{
+      if(b.textContent===sy[k]){
+        const w=document.querySelectorAll(".wagon")[k];w.textContent=sy[k];w.classList.add("fill");
+        b.disabled=true;say(sy[k]);sfx("ding");k++;
+        if(k===sy.length){
+          setTimeout(()=>say(sy.join("")),700);burst(["🎉","⭐"],8);r++;setTimeout(step,2000);
+        }
+      }else{
+        b.classList.add("shake");say("Tekrar dene");setTimeout(()=>b.classList.remove("shake"),500);
+      }
+    });
+  };
+  step();
+}
+
+/* ---------- Matematik ---------- */
+function count(){
+  lastGame="Sayılarla Besleme";
+  const N=6;let r=0;
+  const step=()=>{
+    if(r>=N)return done(N);
+    const n=1+rnd(10),F=foods()[rnd(foods().length)],fn=F[1].toLocaleLowerCase("tr-TR");let k=0;
+    app.innerHTML=`<h2>Sayılarla Besleme ${r+1}/${N}</h2><div id="p" class="pet idle">${face(S.pet,"ok")}</div>
+    <p>${S.name} acıkmış! ${n} tane ${fn} yedirelim.</p>
+    <div class="row">${Array(10).fill(`<button class="fruit">${F[0]}</button>`).join("")}</div>
+    <p>Kalan: <b id="left">${n}</b></p>${back}`;
+    say(`Hadi ${n} tane ${fn} yedirelim`);
+    document.querySelectorAll(".fruit").forEach(b=>b.onclick=()=>{
+      if(k>=n)return;
+      k++;b.classList.add("eaten");b.disabled=true;say(String(k));sfx("ding");$("#left").textContent=n-k;
+      if(k===n){
+        $("#p").className="pet happy";$("#p").innerHTML=face(S.pet,"happy");burst(["💖","✨"],10);
+        setTimeout(()=>say("Afiyet olsun!"),700);r++;setTimeout(step,2200);
+      }
+    });
+  };
+  step();
+}
+const opts3=c=>{const s=new Set([c]);while(s.size<3)s.add(Math.max(1,c>10?c+rnd(7)-3:1+rnd(10)));return shuf([...s])};
+function choice(title,N,gen){
+  lastGame=title;
+  let r=0;
+  const step=()=>{
+    if(r>=N)return done(N);
+    const q=gen();
+    app.innerHTML=`<h2>${title} ${r+1}/${N}</h2>${q.top}
+    <div class="row">${q.opts.map(o=>`<button class="num${isNaN(o)?" txt":""}" data-v="${o}">${o}</button>`).join("")}</div>${back}`;
+    say(q.ask);
+    document.querySelectorAll(".num").forEach(b=>b.onclick=()=>{
+      if(b.dataset.v===String(q.c)){
+        b.classList.add("good");const j=$(".jump");if(j){j.classList.add("hop");j.innerHTML=face(S.pet,"happy")}
+        say(q.ok);burst(["⭐","✨","🎉"],8);r++;setTimeout(step,2200);
+      }else{
+        b.classList.add("shake");say("Tekrar dene");setTimeout(()=>b.classList.remove("shake"),500);
+      }
+    });
+  };
+  step();
+}
+function match(){
+  choice("Sayı Eşleştirme",10,()=>{
+    const n=1+rnd(20),e=["⚽","🐦","⭐","🎈","🍪"][rnd(5)];
+    return{c:n,ask:"Kaç tane var? Say ve doğru rakamı bul",ok:String(n),opts:opts3(n),
+      top:`<div class="group">${(e+" ").repeat(n)}</div><p>Kaç tane var?</p>`};
+  });
+}
+function add(){
+  let q=0;
+  choice("Toplama Trambolini",10,()=>{
+    const mx=q++<5?10:20,a=1+rnd(mx-1),b=1+rnd(mx-a),e="🍎 ";
+    return{c:a+b,ask:`${a} artı ${b} kaç eder?`,ok:`${a} artı ${b} eşittir ${a+b}`,opts:opts3(a+b),
+      top:`<div class="eq">${a} + ${b} = ?</div><div class="group">${e.repeat(a)} ➕ ${e.repeat(b)}</div><div class="jump">${face(S.pet,"ok")}</div><div class="tramp"></div>`};
+  });
+}
+
+/* ---------- Coğrafya (basit düzey) ---------- */
+const GEOK=["Yer Şekilleri","Hava Durumu","Mevsimler","Çevremiz"];
+const GEO=[
+ [["⛰️","Dağ"],["🌊","Deniz"],["🏝️","Ada"],["🏜️","Çöl"],["🌋","Yanardağ"],["🏖️","Kumsal"],["🌲","Orman"],["🌾","Tarla"]],
+ [["☀️","Güneşli"],["🌧️","Yağmurlu"],["❄️","Karlı"],["☁️","Bulutlu"],["💨","Rüzgârlı"],["⛈️","Fırtınalı"],["🌫️","Sisli"]],
+ [["🌸 🌷","İlkbahar"],["🐣 🌱","İlkbahar"],["☀️ 🏖️","Yaz"],["🍉 ☀️","Yaz"],["🍂 🍁","Sonbahar"],["☔ 🍄","Sonbahar"],["⛄ ❄️","Kış"],["🧣 🧤","Kış"]],
+ [["🏥","Hastane"],["🏫","Okul"],["🌳","Park"],["🏪","Market"],["🚒","İtfaiye"],["🏦","Banka"],["📮","Postane"],["⛽","Benzinlik"],["🚉","İstasyon"]]
+];
+const GEOQ=[
+ ["Ülkemizin adı nedir?","Türkiye",["Almanya","Japonya"]],
+ ["Ülkemizin başkenti neresidir?","Ankara",["İstanbul","İzmir"]],
+ ["Bayrağımızın renkleri nelerdir?","Kırmızı ve beyaz",["Mavi ve sarı","Yeşil ve beyaz"]],
+ ["Dünyamızın şekli nasıldır?","Yuvarlak",["Kare","Üçgen"]],
+ ["Güneş hangi yönden doğar?","Doğu",["Batı","Güney"]],
+ ["Güneş hangi yönde batar?","Batı",["Doğu","Kuzey"]],
+ ["Bize ışık ve sıcaklık veren hangisidir?","Güneş",["Ay","Bulut"]],
+ ["Biz hangi gezegende yaşıyoruz?","Dünya",["Mars","Jüpiter"]],
+ ["Gece gökyüzünde ne görürüz?","Ay ve yıldızlar",["Güneş","Gökkuşağı"]]
+];
+const GEOP=["Bu hangi yer şekli?","Bugün hava nasıl?","Bu hangi mevsim?","Burası neresi?"];
+const SEASONSY={"İlkbahar":"🌷","Yaz":"🏖️","Sonbahar":"🍁","Kış":"⛄"};
+const SYQ={"Doğu":"🌅","Batı":"🌇","Güney":"⬇️","Kuzey":"⬆️","Güneş":"☀️","Ay":"🌙","Bulut":"☁️","Dünya":"🌍","Mars":"🔴","Jüpiter":"🟠","Yuvarlak":"⚪","Kare":"⬜","Üçgen":"🔺","Kırmızı ve beyaz":"🔴⚪","Mavi ve sarı":"🔵🟡","Yeşil ve beyaz":"🟢⚪","Ay ve yıldızlar":"🌙⭐","Gökkuşağı":"🌈","Türkiye":"📍","Almanya":"📍","Japonya":"📍","Ankara":"🏛️","İstanbul":"🌉","İzmir":"⚓"};
+function geo(k){
+  const L=GEO[k],qs=shuf(L),N=Math.min(8,L.length);
+  const SY=k===2?SEASONSY:Object.fromEntries(L.map(x=>[x[1],x[0]]));
+  const lb=n=>SY[n]+" "+n;
+  choice("Coğrafya: "+GEOK[k],N,()=>{
+    const [e,a]=qs.pop(),d=shuf([...new Set(L.map(x=>x[1]))].filter(n=>n!==a)).slice(0,2);
+    return{c:lb(a),ask:GEOP[k],ok:a,opts:shuf([a,...d]).map(lb),top:`<div class="emo">${e}</div><p>${GEOP[k]}</p>`};
+  });
+}
+function geoq(){
+  const qs=shuf(GEOQ),N=Math.min(8,qs.length),lb=n=>(SYQ[n]?SYQ[n]+" ":"")+n;
+  choice("Coğrafya: Türkiye ve Dünya",N,()=>{
+    const [q,a,w]=qs.pop();
+    return{c:lb(a),ask:q,ok:a,opts:shuf([a,...w]).map(lb),top:`<p class="gq">${q}</p>`};
+  });
+}
+
+/* ---------- Hesaplar ---------- */
+const users=r=>Object.values(DB.users).filter(u=>u.role===r);
+const nrm=t=>t.trim().toLocaleLowerCase("tr-TR");
+function welcome(){
+  view="welcome";ME=null;S=DB.guest;DB.cur=null;save();hud();
+  app.innerHTML=`<h1>Dostum ile Öğren</h1><p>Kim giriş yapıyor?</p><div class="row">
+  <button class="card" onclick="login('ogrenci')">🧒<br>Öğrenci</button>
+  <button class="card" onclick="login('veli')">👨‍👩‍👧<br>Veli</button>
+  <button class="card" onclick="login('ogretmen')">🧑‍🏫<br>Öğretmen</button></div>
+  <p><button class="sm" onclick="guest()">Hesapsız oyna (misafir)</button></p>`;
+}
+function guest(){DB.cur=null;ME=null;S=DB.guest;save();hud();S.pet?home():pick()}
+function enter(u){
+  DB.cur=u.email;ME=u;S=u.role==="ogrenci"?u.s:DB.guest;save();hud();
+  u.role==="ogrenci"?(S.pet?home():pick()):u.role==="veli"?parent():teacher();
+}
+function login(r){
+  view="login";
+  app.innerHTML=`<h1>${RL[r]} Girişi</h1><input id="em" type="email" placeholder="Gmail adresi"><br>
+  <input id="pw" type="password" placeholder="Şifre"><p id="msg"></p>
+  <button class="go" onclick="doLogin('${r}')">Giriş</button><br>
+  <button class="sm" onclick="forgot()">Şifremi unuttum</button><br>
+  <button class="sm" onclick="reg('${r}')">Kayıt ol</button><br>
+  <button class="sm" onclick="welcome()">⬅ Geri</button>`;
+}
+function doLogin(r){
+  const u=DB.users[nrm($("#em").value)];
+  if(!u||u.pw!==$("#pw").value||u.role!==r){$("#msg").textContent="Kayıt bulunamadı";return}
+  enter(u);
+}
+function reg(r){
+  view="reg";
+  app.innerHTML=`<h1>Kayıt ol</h1><input id="em" type="email" placeholder="Gmail adresi"><br>
+  <input id="ad" placeholder="İsim"><br><input id="sd" placeholder="Soy isim"><br>
+  <select id="ro">${Object.keys(RL).map(k=>`<option value="${k}" ${k===r?"selected":""}>${RL[k]}</option>`).join("")}</select><br>
+  <input id="pw" type="password" placeholder="Şifre (en az 4 karakter)"><p id="msg"></p>
+  <button class="go" onclick="doReg()">Kayıt ol</button><br><button class="sm" onclick="welcome()">⬅ Geri</button>`;
+}
+function doReg(){
+  const e=nrm($("#em").value),ad=$("#ad").value.trim(),sd=$("#sd").value.trim(),ro=$("#ro").value,pw=$("#pw").value,m=$("#msg");
+  if(!/^\S+@\S+\.\S+$/.test(e)){m.textContent="Geçerli bir e-posta yaz";return}
+  if(!ad||!sd){m.textContent="İsim ve soy isim gerekli";return}
+  if(pw.length<4){m.textContent="Şifre en az 4 karakter olmalı";return}
+  if(DB.users[e]){m.textContent="Bu e-posta zaten kayıtlı";return}
+  const u={email:e,pw,ad,sd,role:ro};
+  if(ro==="ogrenci")u.s={pet:null,name:"",full:60,stars:10,snd:true,hist:[]};else u.kids=[];
+  DB.users[e]=u;save();enter(u);
+}
+function forgot(){
+  app.innerHTML=`<h1>Şifremi unuttum</h1><p>Kayıtlı Gmail adresini yaz:</p><input id="em" type="email"><p id="msg"></p>
+  <button class="go" onclick="sendReset()">Bağlantı gönder</button><br><button class="sm" onclick="welcome()">⬅ Geri</button>`;
+}
+function sendReset(){
+  const e=nrm($("#em").value);
+  if(!DB.users[e]){$("#msg").textContent="Kayıt bulunamadı";return}
+  app.innerHTML=`<h1>📧 Gönderildi</h1><p>${e} adresine şifre yenileme bağlantısı gönderildi.</p>
+  <p class="hist">(Deneme sürümü: gerçek e-posta göndermek için sunucu gerekir. Aşağıdaki buton, e-postadaki bağlantıya tıklamayı taklit eder.)</p>
+  <button onclick="newPw('${e}')">Bağlantıya tıkla</button>`;
+}
+function newPw(e){
+  app.innerHTML=`<h1>Yeni şifre</h1><input id="pw" type="password" placeholder="Yeni şifre"><p id="msg"></p>
+  <button class="go" onclick="setPw('${e}')">Kaydet</button>`;
+}
+function setPw(e){
+  if($("#pw").value.length<4){$("#msg").textContent="En az 4 karakter";return}
+  DB.users[e].pw=$("#pw").value;save();welcome();
+}
+
+/* ---------- Veli paneli ---------- */
+function parent(){
+  view="parent";const ks=ME.kids.map(e=>DB.users[e]).filter(Boolean);
+  app.innerHTML=`<h1>👨‍👩‍👧 Veli: ${ME.ad}</h1><h2>Çocuklarım</h2>
+  <div class="row">${ks.map(k=>`<button class="card" onclick="kid('${k.email}')">${k.s.pet||"🧒"}<br>${k.ad} ${k.sd}</button>`).join("")||"<p>Henüz çocuk eklemedin.</p>"}</div>
+  <h2>Çocuk ekle</h2><input id="ad" placeholder="Çocuğun ismi"><br><input id="sd" placeholder="Çocuğun soy ismi"><br>
+  <input id="em" type="email" placeholder="Çocuğun kayıtlı e-postası"><p id="msg"></p><button class="go" onclick="addKid()">Ekle</button>`;
+}
+function addKid(){
+  const u=DB.users[nrm($("#em").value)];
+  if(!u||u.role!=="ogrenci"||nrm(u.ad)!==nrm($("#ad").value)||nrm(u.sd)!==nrm($("#sd").value)){$("#msg").textContent="Öğrenci bulunamadı";return}
+  if(!ME.kids.includes(u.email))ME.kids.push(u.email);save();parent();
+}
+
+/* ---------- Öğretmen paneli ---------- */
+function teacher(){
+  view="teacher";const all=users("ogrenci"),mine=all.filter(u=>ME.kids.includes(u.email));
+  const c=u=>`${u.s.pet||"🧒"}<br>${u.ad} ${u.sd}`;
+  app.innerHTML=`<h1>🧑‍🏫 Öğretmen: ${ME.ad}</h1><h2>Öğrencilerim</h2>
+  <div class="row">${mine.map(u=>`<button class="card" onclick="kid('${u.email}')">${c(u)}</button>`).join("")||"<p>Henüz öğrencin yok.</p>"}</div>
+  <h2>Tüm öğrenciler</h2><p class="hist">Bir öğrenciyi kendi öğrencin yapmak (ya da çıkarmak) için profiline basılı tut.</p>
+  <div class="row" id="all">${all.map(u=>`<button class="card ${ME.kids.includes(u.email)?"on":""}" data-e="${u.email}">${c(u)}</button>`).join("")||"<p>Kayıtlı öğrenci yok.</p>"}</div>`;
+  document.querySelectorAll("#all .card").forEach(b=>{
+    let tm;
+    b.onpointerdown=()=>{tm=setTimeout(()=>{
+      const e=b.dataset.e,i=ME.kids.indexOf(e);i<0?ME.kids.push(e):ME.kids.splice(i,1);save();teacher()},700)};
+    b.onpointerup=b.onpointerleave=()=>clearTimeout(tm);
+    b.oncontextmenu=e=>e.preventDefault();
+  });
+}
+
+/* ---------- Öğrenci profili ve puan verme (veli + öğretmen) ---------- */
+function kid(e){
+  view="kid";const k=DB.users[e],P=ME.role==="veli",C=P?PCRIT:TCRIT,h=k.s.hist||[],g=h.filter(x=>x.by==="Oyun");
+  app.innerHTML=`<h1>${k.s.pet||"🧒"} ${k.ad} ${k.sd}</h1>
+  <p>Evcil dost: ${k.s.pet?k.s.name:"henüz seçilmedi"} · ⭐ ${k.s.stars}</p>
+  <h2>İlerleme</h2><p>${g.length} oyun tamamlandı</p>
+  <div class="hist">${h.slice(-8).reverse().map(x=>`<div>${x.by==="Oyun"?"🎮":"🏅 "+x.by+":"} ${x.txt} <b>+${x.pts}</b></div>`).join("")||"Henüz kayıt yok"}</div>
+  <h2>Puan ver</h2><div class="row">${C.map((c,i)=>`<button onclick="ask('${e}',${i})">${c[0]}<small>+${c[1]} ⭐</small></button>`).join("")}</div>
+  <button class="sm" onclick="${P?"parent":"teacher"}()">⬅ Geri</button>`;
+}
+function ask(e,i){
+  const P=ME.role==="veli",c=(P?PCRIT:TCRIT)[i],o=document.createElement("div");o.id="ov";
+  o.innerHTML=`<div class="dlg"><p>${P?"Çocuğunuza":"Öğrenciye"} “${c[0]}” için ${c[1]} puan vermek istiyor musunuz?</p>
+  <button class="go" id="y">Evet</button><button id="n">Hayır</button></div>`;
+  document.body.appendChild(o);
+  $("#n").onclick=()=>o.remove();
+  $("#y").onclick=()=>{
+    const k=DB.users[e];k.s.stars+=c[1];
+    (k.s.hist=k.s.hist||[]).push({by:P?"Veli":"Öğretmen",txt:c[0],pts:c[1],t:Date.now()});
+    k.s.hist=k.s.hist.slice(-100);save();o.remove();burst(["⭐","✨"],10);kid(e);
+  };
+}
+
+/* ---------- Başlat ---------- */
+$("#snd").onclick=()=>{S.snd=!S.snd;save();hud()};
+$("#rst").onclick=welcome;
+$("#vc").onclick=()=>{
+  const v=trVoices();if(!v.length){alert("Bu cihazda Türkçe ses bulunamadı. Edge tarayıcısı çok doğal Türkçe sesler sunar.");return}
+  VO=v[(v.indexOf(VO)+1)%v.length];DB.voice=VO.name;save();say("Merhaba! Ben senin yeni sesinim.");
+};
+hud();
+{const u=DB.cur&&DB.users[DB.cur];u?enter(u):welcome()}
+</script>
+</body>
+</html>
